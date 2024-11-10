@@ -5,7 +5,7 @@ import { CirclePlay } from "lucide-react";
 
 export default function Header() {
   return (
-    <header className="flex items-center justify-between border-b border-border px-20 py-3">
+    <header className="flex h-[3.5rem] items-center justify-between border-b border-border px-20 py-3">
       <Image src="/logo.svg" alt="logo" width={125} height={125} />
 
       <div className="flex items-center gap-3">

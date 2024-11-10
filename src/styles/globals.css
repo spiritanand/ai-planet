@@ -65,13 +65,31 @@
   }
 }
 
+.flow-builder {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-areas: "side-panel main main main main main";
+}
+
+main {
+  grid-area: main;
+}
+
+#side-panel {
+  grid-area: side-panel;
+}
+
 .react-flow__node {
+  width: fit-content !important;
+  height: fit-content !important;
+  font-size: 1.5rem !important;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   padding: 0;
   border: none;
   border-radius: 0.75rem;
   box-shadow: none !important;
-}
-
-.react-flow__node-input {
-  width: 350px;
 }
