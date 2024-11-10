@@ -37,6 +37,7 @@ function Providers({ children }: { children: React.ReactNode }) {
           ...baseNode,
           data: {
             value: "",
+            status: "default",
           },
         });
       } else if (active.id === "output") {
@@ -44,6 +45,7 @@ function Providers({ children }: { children: React.ReactNode }) {
           ...baseNode,
           data: {
             value: "",
+            status: "default",
           },
         });
       } else {
@@ -55,6 +57,7 @@ function Providers({ children }: { children: React.ReactNode }) {
             model: "",
             temperature: 0,
             maxTokens: 0,
+            status: "default",
           },
         });
       }

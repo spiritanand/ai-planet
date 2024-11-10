@@ -16,13 +16,21 @@ import useStore from "@/lib/store";
 export function OutputNode() {
   const { outputNode } = useStore((state) => state);
 
+  if (!outputNode) return null;
+
   return (
     <Card className="min-w-[320px] border bg-background shadow-md">
       <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
         <FileOutput className="h-4 w-4" />
         <div className="flex flex-1 items-center justify-between">
           <CardTitle className="text-sm font-medium">OUTPUT</CardTitle>
-          <div className="h-2 w-2 rounded-full bg-gray-300" />
+          <div
+            className={cn(
+              "h-2 w-2 rounded-full bg-gray-500",
+              outputNode.data.status === "success" && "bg-green-500",
+              outputNode.data.status === "error" && "bg-red-500",
+            )}
+          />
         </div>
       </CardHeader>
       <CardContent className="pb-3">

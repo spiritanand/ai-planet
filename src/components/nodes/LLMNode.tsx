@@ -18,11 +18,12 @@ import {
 } from "@/components/ui/select";
 import useStore from "@/lib/store";
 import { Input } from "../ui/input";
+import { cn } from "@/lib/utils";
 
 export function LLMNode() {
   const { updateLLMNode, llmNode } = useStore((state) => state);
 
-  console.log({ llmNode });
+  if (!llmNode) return null;
 
   return (
     <Card className="min-w-[320px] border bg-background shadow-md">
@@ -30,7 +31,13 @@ export function LLMNode() {
         <Brain className="h-4 w-4" />
         <div className="flex flex-1 items-center justify-between">
           <CardTitle className="text-sm font-medium">LLM ENGINE</CardTitle>
-          <div className="h-2 w-2 rounded-full bg-gray-300" />
+          <div
+            className={cn(
+              "h-2 w-2 rounded-full bg-gray-500",
+              llmNode.data.status === "success" && "bg-green-500",
+              llmNode.data.status === "error" && "bg-red-500",
+            )}
+          />
         </div>
       </CardHeader>
       <CardContent className="pb-3">

@@ -18,11 +18,10 @@ export default function Flow() {
     [],
   );
 
-  const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useStore(
-    (state) => state,
-  );
+  const { isValidFlow, nodes, edges, onNodesChange, onEdgesChange, onConnect } =
+    useStore((state) => state);
 
-  console.log({ nodes });
+  console.log({ isValidFlow: isValidFlow() });
 
   return (
     <div className="h-[calc(100vh-3.5rem)] w-full">
