@@ -48,29 +48,38 @@ export type RFState = {
   setEdges: (edges: Edge[]) => void;
   inputNode: InputNode | null;
   addInputNode: (node: InputNode) => void;
-  updateInputNodeValue: (nodeId: string, value: string) => void;
+  updateInputNodeValue: (
+    nodeId: string,
+    value: string,
+    status?: "default" | "success" | "error",
+  ) => void;
   outputNode: OutputNode | null;
   addOutputNode: (node: OutputNode) => void;
-  updateOutputNodeValue: (nodeId: string, value: string) => void;
+  updateOutputNodeValue: (
+    nodeId: string,
+    value: string,
+    status?: "default" | "success" | "error",
+  ) => void;
   llmNode: LLMNode | null;
   addLLMNode: (node: LLMNode) => void;
   updateLLMNode: (nodeId: string, value: LLMNode["data"]) => void;
-  isValidFlow: () => boolean;
+  isValidConnections: () => {
+    isConnectionsValid: boolean;
+    hasInputToLLMPath: boolean;
+    hasLLMToOutputPath: boolean;
+  };
 };
 
 // Store to manage the state of the flow
 const useStore = createWithEqualityFn<RFState>((set, get) => ({
   nodes: [] as Node[],
   edges: [] as Edge[],
-  inputNode: {} as InputNode,
-  outputNode: {} as OutputNode,
-  llmNode: {} as LLMNode,
+  inputNode: null,
+  outputNode: null,
+  llmNode: null,
   onNodesChange: (changes: NodeChange[]) => {
     // Handle node removals
-    const nodeRemovals = changes.filter(
-      (change): change is NodeChange & { type: "remove" } =>
-        change.type === "remove",
-    );
+    const nodeRemovals = changes.filter((change) => change.type === "remove");
 
     set((state) => {
       const newState: Partial<RFState> = {
@@ -79,15 +88,9 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
 
       // Reset corresponding state when a node is removed
       nodeRemovals.forEach((removal) => {
-        if (removal.id === state.inputNode?.id) {
-          newState.inputNode = null;
-        }
-        if (removal.id === state.outputNode?.id) {
-          newState.outputNode = null;
-        }
-        if (removal.id === state.llmNode?.id) {
-          newState.llmNode = null;
-        }
+        if (removal.id === state.inputNode?.id) newState.inputNode = null;
+        if (removal.id === state.outputNode?.id) newState.outputNode = null;
+        if (removal.id === state.llmNode?.id) newState.llmNode = null;
       });
 
       return newState;
@@ -130,10 +133,10 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
   setEdges: (edges: Edge[]) => {
     set({ edges });
   },
-  addInputNode: (node: Node) => {
+  addInputNode: (node: InputNode) => {
     set(({ nodes }) => ({
       nodes: [...nodes, node],
-      inputNode: node as InputNode,
+      inputNode: node,
     }));
   },
   updateInputNodeValue: (
@@ -143,7 +146,9 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
   ) => {
     set((state) => ({
       nodes: state.nodes.map((node) =>
-        node.id === nodeId ? { ...node, data: { value } } : node,
+        node.id === nodeId
+          ? { ...node, data: { ...node.data, value }, status }
+          : node,
       ),
       inputNode:
         nodeId === state.inputNode?.id
@@ -151,10 +156,10 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
           : state.inputNode,
     }));
   },
-  addOutputNode: (node: Node) => {
+  addOutputNode: (node: OutputNode) => {
     set(({ nodes }) => ({
       nodes: [...nodes, node],
-      outputNode: node as OutputNode,
+      outputNode: node,
     }));
   },
   updateOutputNodeValue: (
@@ -164,7 +169,9 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
   ) => {
     set((state) => ({
       nodes: state.nodes.map((node) =>
-        node.id === nodeId ? { ...node, data: { value } } : node,
+        node.id === nodeId
+          ? { ...node, data: { ...node.data, value }, status }
+          : node,
       ),
       outputNode:
         nodeId === state.outputNode?.id
@@ -172,31 +179,54 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
           : state.outputNode,
     }));
   },
-  addLLMNode: (node: Node) => {
+  addLLMNode: (node: LLMNode) => {
     set((state) => ({
       nodes: [...state.nodes, node],
-      llmNode: node as LLMNode,
+      llmNode: node,
     }));
   },
   updateLLMNode: (nodeId: string, value: LLMNode["data"]) => {
     set((state) => ({
       nodes: state.nodes.map((node) =>
-        node.id === nodeId ? { ...node, data: value } : node,
+        node.id === nodeId
+          ? { ...node, data: { ...node.data, ...value } }
+          : node,
       ),
       llmNode:
         nodeId === state.llmNode?.id
-          ? { ...state.llmNode, data: value }
+          ? {
+              ...state.llmNode,
+              data: { ...state.llmNode?.data, ...value },
+            }
           : state.llmNode,
     }));
   },
-  isValidFlow: () => {
+  isValidConnections: () => {
     const { inputNode, outputNode, llmNode, edges } = get();
 
     // Check if all required nodes are present
-    if (!inputNode || !outputNode || !llmNode) return false;
+    if (!inputNode || !outputNode || !llmNode)
+      return {
+        isConnectionsValid: false,
+        hasInputToLLMPath: true,
+        hasLLMToOutputPath: true,
+      };
+
+    get().updateInputNodeValue(inputNode.id, inputNode.data.value, "default");
+    get().updateLLMNode(llmNode.id, { ...llmNode.data, status: "default" });
+    get().updateOutputNodeValue(
+      outputNode.id,
+      outputNode.data.value,
+      "default",
+    );
 
     // Check if all edges are connected
-    if (edges.length === 0) return false;
+    if (edges.length === 0)
+      return {
+        isConnectionsValid: false,
+        hasInputToLLMPath: true,
+        hasLLMToOutputPath: true,
+      };
 
     // Check if there is a path from input to output
     const inputNodeId = inputNode.id;
@@ -207,13 +237,20 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
       (edge) => edge.source === inputNodeId && edge.target === llmNodeId,
     );
 
+    if (!hasInputToLLMPath)
+      return {
+        isConnectionsValid: false,
+        hasInputToLLMPath: false,
+        hasLLMToOutputPath: true,
+      };
+
     const hasLLMToOutputPath = edges.some(
       (edge) => edge.source === llmNodeId && edge.target === outputNodeId,
     );
 
     const isConnectionsValid = hasInputToLLMPath && hasLLMToOutputPath;
 
-    return isConnectionsValid;
+    return { isConnectionsValid, hasInputToLLMPath, hasLLMToOutputPath };
   },
 }));
 

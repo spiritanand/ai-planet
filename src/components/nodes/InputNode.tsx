@@ -17,8 +17,15 @@ export function InputNode() {
   const { updateInputNodeValue, inputNode } = useStore((state) => state);
 
   if (!inputNode) return null;
+
   return (
-    <Card className="min-w-[320px] border bg-background shadow-md">
+    <Card
+      className={cn(
+        "min-w-[320px] border bg-background shadow-md",
+        inputNode.data.status === "error" && "border-red-500",
+        inputNode.data.status === "success" && "border-green-500",
+      )}
+    >
       <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
         <FileInput className="h-4 w-4" />
         <div className="flex flex-1 items-center justify-between">

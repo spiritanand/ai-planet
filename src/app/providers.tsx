@@ -26,9 +26,8 @@ function Providers({ children }: { children: React.ReactNode }) {
         id: nanoid(),
         type: active.id as string,
         position: {
-          // Ensure the node is dropped within the window
-          x: Math.max(window.innerWidth + delta.x, 0),
-          y: Math.max(delta.y + 15, 0),
+          x: delta.x,
+          y: delta.y,
         },
       };
 
@@ -52,11 +51,11 @@ function Providers({ children }: { children: React.ReactNode }) {
         addLLMNode({
           ...baseNode,
           data: {
-            apiBase: "",
+            apiBase: "https://api.openai.com/v1",
             apiKey: "",
-            model: "",
-            temperature: 0,
-            maxTokens: 0,
+            model: "gpt-3.5-turbo",
+            temperature: 0.5,
+            maxTokens: 2000,
             status: "default",
           },
         });
@@ -66,7 +65,7 @@ function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <DndContext id={dndId} onDragEnd={handleDragEnd}>
-      <Toaster richColors position="top-right" />
+      <Toaster richColors position="top-center" />
       {children}
     </DndContext>
   );

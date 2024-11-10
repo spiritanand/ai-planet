@@ -26,7 +26,13 @@ export function LLMNode() {
   if (!llmNode) return null;
 
   return (
-    <Card className="min-w-[320px] border bg-background shadow-md">
+    <Card
+      className={cn(
+        "min-w-[320px] border bg-background shadow-md",
+        llmNode.data.status === "error" && "border-red-500",
+        llmNode.data.status === "success" && "border-green-500",
+      )}
+    >
       <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
         <Brain className="h-4 w-4" />
         <div className="flex flex-1 items-center justify-between">
@@ -61,8 +67,10 @@ export function LLMNode() {
                 <SelectValue placeholder="Select model" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="gpt-3.5">gpt-3.5</SelectItem>
+                <SelectItem value="gpt-3.5-turbo">gpt-3.5-turbo</SelectItem>
                 <SelectItem value="gpt-4">gpt-4</SelectItem>
+                <SelectItem value="gpt-4o">gpt-4o</SelectItem>
+                <SelectItem value="gpt-4o-mini">gpt-4o-mini</SelectItem>
               </SelectContent>
             </Select>
           </div>

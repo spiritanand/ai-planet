@@ -1,7 +1,6 @@
 "use client";
 
 import { Handle, Position } from "@xyflow/react";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { FileOutput } from "lucide-react";
 import {
@@ -12,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import useStore from "@/lib/store";
+import { Textarea } from "../ui/textarea";
 
 export function OutputNode() {
   const { outputNode } = useStore((state) => state);
@@ -19,7 +19,13 @@ export function OutputNode() {
   if (!outputNode) return null;
 
   return (
-    <Card className="min-w-[320px] border bg-background shadow-md">
+    <Card
+      className={cn(
+        "min-w-[320px] border bg-background shadow-md",
+        outputNode.data.status === "error" && "border-red-500",
+        outputNode.data.status === "success" && "border-green-500",
+      )}
+    >
       <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
         <FileOutput className="h-4 w-4" />
         <div className="flex flex-1 items-center justify-between">
@@ -40,12 +46,12 @@ export function OutputNode() {
 
         <div className="space-y-2">
           <label className="text-sm font-medium">Output Response</label>
-          <Input
+          <Textarea
             placeholder="Output Response will be shown here"
             value={outputNode.data.value}
             readOnly
             className={cn(
-              "bg-muted/50",
+              "min-h-[300px] bg-muted/50",
               "cursor-default",
               "focus:ring-2 focus:ring-ring focus:ring-offset-2",
             )}
