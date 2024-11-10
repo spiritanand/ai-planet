@@ -5,26 +5,26 @@ import { DROPPABLE } from "@/lib/constants";
 import useStore from "@/lib/store";
 import { nanoid } from "nanoid";
 import { useId } from "react";
-// import { Toaster } from "react-hot-toast";
+import { Toaster } from "sonner";
 
 function Providers({ children }: { children: React.ReactNode }) {
   // Provide a unique id for the DndContext
   const dndId = useId();
 
-  const { addNode, nodes, edges } = useStore((state) => state);
+  const { addInputNode, addOutputNode, addLLMNode } = useStore(
+    (state) => state,
+  );
 
   // If the drag ends over the droppable area, add a new node
   function handleDragEnd(event: DragEndEvent) {
     const { active, over, delta } = event;
-    console.log({ active, over, delta });
 
     if (!over || active.id === over.id) return;
 
     if (over.id === DROPPABLE) {
-      const node = {
+      const baseNode = {
         id: nanoid(),
         type: active.id as string,
-        data: { label: `Node ${nodes.length + 1}` },
         position: {
           // Ensure the node is dropped within the window
           x: Math.max(window.innerWidth + delta.x, 0),
@@ -32,20 +32,38 @@ function Providers({ children }: { children: React.ReactNode }) {
         },
       };
 
-      // Add the new node to the store
-      addNode(node);
+      if (active.id === "input") {
+        addInputNode({
+          ...baseNode,
+          data: {
+            value: "",
+          },
+        });
+      } else if (active.id === "output") {
+        addOutputNode({
+          ...baseNode,
+          data: {
+            value: "",
+          },
+        });
+      } else {
+        addLLMNode({
+          ...baseNode,
+          data: {
+            apiBase: "",
+            apiKey: "",
+            model: "",
+            temperature: 0,
+            maxTokens: 0,
+          },
+        });
+      }
     }
   }
 
   return (
     <DndContext id={dndId} onDragEnd={handleDragEnd}>
-      {/* <Toaster
-        position="top-center"
-        gutter={8}
-        toastOptions={{
-          duration: 5000,
-        }}
-      /> */}
+      <Toaster richColors position="top-right" />
       {children}
     </DndContext>
   );

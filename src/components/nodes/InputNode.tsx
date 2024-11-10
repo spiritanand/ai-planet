@@ -3,7 +3,6 @@
 import { Handle, Position } from "@xyflow/react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { useCallback } from "react";
 import { FileInput } from "lucide-react";
 import {
   Card,
@@ -12,28 +11,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import useStore from "@/lib/store";
 
-interface InputNodeData {
-  label?: string;
-  value: string;
-  onChange?: (value: string) => void;
-}
-
-interface InputNodeProps<T> {
-  data: T;
-  isConnectable?: boolean;
-}
-
-export function InputNode({
-  data,
-  isConnectable,
-}: InputNodeProps<InputNodeData>) {
-  const handleChange = useCallback(
-    (evt: React.ChangeEvent<HTMLInputElement>) => {
-      data.onChange?.(evt.target.value);
-    },
-    [data],
-  );
+export function InputNode() {
+  const { updateInputNodeValue, inputNode } = useStore((state) => state);
 
   return (
     <Card className="min-w-[320px] border bg-background shadow-md">
@@ -53,8 +34,8 @@ export function InputNode({
           <label className="text-sm font-medium">Input</label>
           <Input
             placeholder="Type Something..."
-            value={data.value}
-            onChange={handleChange}
+            value={inputNode.data.value}
+            onChange={(e) => updateInputNodeValue(inputNode.id, e.target.value)}
             className={cn(
               "transition-all",
               "focus:ring-2 focus:ring-ring focus:ring-offset-2",
@@ -66,7 +47,7 @@ export function InputNode({
           <Handle
             type="source"
             position={Position.Right}
-            isConnectable={isConnectable}
+            isConnectable
             className="h-3 w-3"
           />
           <span className="text-xs">LLM Engine</span>

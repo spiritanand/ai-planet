@@ -22,6 +22,8 @@ export default function Flow() {
     (state) => state,
   );
 
+  console.log({ nodes });
+
   return (
     <div className="h-[calc(100vh-3.5rem)] w-full">
       <ReactFlow

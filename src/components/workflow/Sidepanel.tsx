@@ -2,7 +2,7 @@
 
 import Draggable from "@/components/DragAndDrop/Draggable";
 import { NODES } from "@/lib/constants";
-import { MenuIcon, Settings2, FileInput, FileOutput } from "lucide-react";
+import { MenuIcon, Brain, FileInput, FileOutput } from "lucide-react";
 
 function Sidepanel() {
   return (
@@ -24,7 +24,7 @@ function Sidepanel() {
             <div className="flex cursor-grab items-center justify-between rounded-md border bg-background p-3 hover:bg-accent/50">
               <div className="flex items-center gap-2">
                 {node.type === "input" && <FileInput className="h-5 w-5" />}
-                {node.type === "llm" && <Settings2 className="h-5 w-5" />}
+                {node.type === "llm" && <Brain className="h-5 w-5" />}
                 {node.type === "output" && <FileOutput className="h-5 w-5" />}
                 <span className="text-sm">{node.label}</span>
               </div>

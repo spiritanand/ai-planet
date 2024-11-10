@@ -3,7 +3,6 @@
 import { Handle, Position } from "@xyflow/react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { useCallback } from "react";
 import { FileOutput } from "lucide-react";
 import {
   Card,
@@ -12,28 +11,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import useStore from "@/lib/store";
 
-interface OutputNodeData {
-  label?: string;
-  value: string;
-  onChange?: (value: string) => void;
-}
-
-interface OutputNodeProps<T> {
-  data: T;
-  isConnectable?: boolean;
-}
-
-export function OutputNode({
-  data,
-  isConnectable,
-}: OutputNodeProps<OutputNodeData>) {
-  const handleChange = useCallback(
-    (evt: React.ChangeEvent<HTMLInputElement>) => {
-      data.onChange?.(evt.target.value);
-    },
-    [data],
-  );
+export function OutputNode() {
+  const { outputNode } = useStore((state) => state);
 
   return (
     <Card className="min-w-[320px] border bg-background shadow-md">
@@ -53,8 +34,7 @@ export function OutputNode({
           <label className="text-sm font-medium">Output Response</label>
           <Input
             placeholder="Output Response will be shown here"
-            value={data.value}
-            onChange={handleChange}
+            value={outputNode.data.value}
             readOnly
             className={cn(
               "bg-muted/50",
@@ -68,7 +48,7 @@ export function OutputNode({
           <Handle
             type="target"
             position={Position.Left}
-            isConnectable={isConnectable}
+            isConnectable
             className="h-3 w-3"
           />
           <span className="text-xs">LLM Engine</span>

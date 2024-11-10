@@ -13,37 +13,53 @@ import {
 } from "@xyflow/react";
 import { createWithEqualityFn } from "zustand/traditional";
 
+interface InputNode extends Node {
+  data: {
+    value: string;
+  };
+}
+
+interface OutputNode extends Node {
+  data: {
+    value: string;
+  };
+}
+
+interface LLMNode extends Node {
+  data: {
+    model: string;
+    temperature: number;
+    maxTokens: number;
+    apiBase: string;
+    apiKey: string;
+  };
+}
+
 export type RFState = {
   nodes: Node[];
   edges: Edge[];
-  updateLabel: (nodeId: string, message: string) => void;
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
-  addNode: (node: Node) => void;
   setEdges: (edges: Edge[]) => void;
+  inputNode: InputNode;
+  addInputNode: (node: InputNode) => void;
+  updateInputNodeValue: (nodeId: string, value: string) => void;
+  outputNode: OutputNode;
+  addOutputNode: (node: OutputNode) => void;
+  updateOutputNodeValue: (nodeId: string, value: string) => void;
+  llmNode: LLMNode;
+  addLLMNode: (node: LLMNode) => void;
+  updateLLMNode: (nodeId: string, value: LLMNode["data"]) => void;
 };
 
 // Store to manage the state of the flow
 const useStore = createWithEqualityFn<RFState>((set, get) => ({
   nodes: [] as Node[],
   edges: [] as Edge[],
-  updateLabel: (nodeId: string, message: string) => {
-    set(({ nodes }) => {
-      const node = nodes.find((node) => node.id === nodeId);
-
-      if (!node) return { nodes };
-
-      node.data = {
-        ...node.data,
-        label: message,
-      };
-
-      return {
-        nodes: [...nodes],
-      };
-    });
-  },
+  inputNode: {} as InputNode,
+  outputNode: {} as OutputNode,
+  llmNode: {} as LLMNode,
   onNodesChange: (changes: NodeChange[]) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
@@ -70,7 +86,7 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
     )
       return;
 
-    set(({ edges }) => {
+    set(() => {
       return {
         edges: addEdge(connection, get().edges),
       };
@@ -81,6 +97,57 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
   },
   setEdges: (edges: Edge[]) => {
     set({ edges });
+  },
+  addInputNode: (node: Node) => {
+    set(({ nodes }) => ({
+      nodes: [...nodes, node],
+      inputNode: node as InputNode,
+    }));
+  },
+  updateInputNodeValue: (nodeId: string, value: string) => {
+    set(({ nodes }) => ({
+      nodes: nodes.map((node) =>
+        node.id === nodeId ? { ...node, data: { value } } : node,
+      ),
+      inputNode:
+        nodeId === get().inputNode.id
+          ? { ...get().inputNode, data: { value } }
+          : get().inputNode,
+    }));
+  },
+  addOutputNode: (node: Node) => {
+    set(({ nodes }) => ({
+      nodes: [...nodes, node],
+      outputNode: node as OutputNode,
+    }));
+  },
+  updateOutputNodeValue: (nodeId: string, value: string) => {
+    set(({ nodes }) => ({
+      nodes: nodes.map((node) =>
+        node.id === nodeId ? { ...node, data: { value } } : node,
+      ),
+      outputNode:
+        nodeId === get().outputNode.id
+          ? { ...get().outputNode, data: { value } }
+          : get().outputNode,
+    }));
+  },
+  addLLMNode: (node: Node) => {
+    set(({ nodes }) => ({
+      nodes: [...nodes, node],
+      llmNode: node as LLMNode,
+    }));
+  },
+  updateLLMNode: (nodeId: string, value: LLMNode["data"]) => {
+    set(({ nodes }) => ({
+      nodes: nodes.map((node) =>
+        node.id === nodeId ? { ...node, data: value } : node,
+      ),
+      llmNode:
+        nodeId === get().llmNode.id
+          ? { ...get().llmNode, data: value }
+          : get().llmNode,
+    }));
   },
 }));
 

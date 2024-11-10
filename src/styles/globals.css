@@ -93,3 +93,7 @@ main {
   border-radius: 0.75rem;
   box-shadow: none !important;
 }
+
+.react-flow__panel.react-flow__attribution {
+  display: none;
+}
