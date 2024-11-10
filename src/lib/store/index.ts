@@ -134,6 +134,13 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
     set({ edges });
   },
   addInputNode: (node: InputNode) => {
+    if (get().inputNode) {
+      toast.info("Input node already exists", {
+        description:
+          "Please remove the existing input node before adding a new one.",
+      });
+      return;
+    }
     set(({ nodes }) => ({
       nodes: [...nodes, node],
       inputNode: node,
@@ -157,6 +164,14 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
     }));
   },
   addOutputNode: (node: OutputNode) => {
+    if (get().outputNode) {
+      toast.info("Output node already exists", {
+        description:
+          "Please remove the existing output node before adding a new one.",
+      });
+      return;
+    }
+
     set(({ nodes }) => ({
       nodes: [...nodes, node],
       outputNode: node,
@@ -180,6 +195,14 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
     }));
   },
   addLLMNode: (node: LLMNode) => {
+    if (get().llmNode) {
+      toast.info("LLM node already exists", {
+        description:
+          "Please remove the existing LLM node before adding a new one.",
+      });
+      return;
+    }
+
     set((state) => ({
       nodes: [...state.nodes, node],
       llmNode: node,
