@@ -1,6 +1,6 @@
 # 🤖 LLM Workflow Builder
 
-A powerful visual workflow builder for Large Language Models, built with the T3 Stack.
+A powerful visual workflow builder for Large Language Models.
 
 ![LLM Workflow Builder Preview](./public/preview.png)
 
@@ -17,14 +17,11 @@ A powerful visual workflow builder for Large Language Models, built with the T3 
 
 ## 🛠️ Tech Stack
 
-This project is built on the [T3 Stack](https://create.t3.gg/), featuring:
+This project is built on [Next.js]([https://create.t3.gg/](https://nextjs.org/docs)), featuring:
 
-- 🚀 [Next.js 14](https://nextjs.org) - React framework with App Router
-- 🔐 [NextAuth.js](https://next-auth.js.org) - Authentication
-- 💾 [Drizzle](https://orm.drizzle.team) - Type-safe ORM
-- 🎨 [Tailwind CSS](https://tailwindcss.com) - Utility-first CSS
-- 🔄 [tRPC](https://trpc.io) - End-to-end type-safe APIs
+- 🚀 [Next.js 15](https://nextjs.org) - React framework with App Router
 - ⚛️ [ReactFlow](https://reactflow.dev) - Flow-based node editor
+- 🎨 [Tailwind CSS](https://tailwindcss.com) - Utility-first CSS
 - 🎭 [Shadcn/ui](https://ui.shadcn.com) - UI components
 
 ## 🚀 Getting Started
