@@ -1,11 +1,13 @@
+import Flow from "@/components/workflow/flow";
 import Header from "@/components/layout/builder/header";
-import React from "react";
 
-export default function page() {
+export default function WorkflowPage() {
   return (
     <>
       <Header />
-      <main></main>
+      <main className="container mx-auto p-4">
+        <Flow />
+      </main>
     </>
   );
 }
